@@ -20,12 +20,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "../ui/input";
+import { Input } from "@/components/ui/input";
 import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { initialProfile } from "@/lib/initial-profile";
 import { Profile } from "@prisma/client";
+import FileUpload from "../upload-file";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -92,11 +93,11 @@ export const InitialModal = ({profile} : {profile: Profile}) => {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        {/* <FileUpload
-                          endpoint="serverImage"
+                        <FileUpload
+                          endpoint="server"
                           value={field.value}
                           onChange={field.onChange}
-                        /> */}
+                        />
                       </FormControl>
                     </FormItem>
                   )}
