@@ -49,7 +49,7 @@ export const InitialModal = ({profile} : {profile: Profile}) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: profile.name,
+      name: profile.name + "'s server",
       imageUrl: profile.imageUrl,
     },
   });
@@ -57,6 +57,7 @@ export const InitialModal = ({profile} : {profile: Profile}) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      console.log("value", values);
       await axios.post("/api/servers", values);
 
       form.reset();

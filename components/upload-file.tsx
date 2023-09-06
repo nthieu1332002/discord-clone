@@ -14,11 +14,16 @@ interface FileUploadProps {
 }
 const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
   const fileType = value?.split(".").pop();
-
   if (value && fileType !== "pdf") {
     return (
       <div className="relative h-20 w-20">
-        <Image fill src={value} alt="Upload" className="rounded-full" />
+        <Image
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          fill
+          src={value}
+          alt="Upload"
+          className="rounded-full"
+        />
         <button
           onClick={() => onChange("")}
           className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
