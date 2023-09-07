@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { initialProfile } from "@/lib/initial-profile";
 import { Profile } from "@prisma/client";
 import FileUpload from "../upload-file";
 

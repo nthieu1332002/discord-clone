@@ -2,7 +2,7 @@
 const nextConfig = {
     images: {
         domains: [
-            "uploadthing.com", "img.clerk.com"
+            "uploadthing.com", "img.clerk.com", "utfs.io"
         ],
     }
 }

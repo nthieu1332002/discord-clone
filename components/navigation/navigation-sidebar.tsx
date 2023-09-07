@@ -2,10 +2,12 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import React from "react";
-import { ModeToggle } from "../toggle";
+import { ModeToggle } from "@/components/toggle";
 import { UserButton } from "@clerk/nextjs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import NavigationItem from "@/components/navigation/navigation-item";
+import NavigationAddServer from "./navigation-add-server";
 
 const NavigationSidebar = async () => {
   const profile = await currentProfile();
@@ -25,18 +27,19 @@ const NavigationSidebar = async () => {
   });
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-[#1d1d22] bg-[#E3E5E8] py-3">
+
       <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
       <ScrollArea className="flex-1 w-full">
         {servers.map((server) => (
           <div key={server.id} className="mb-4">
-            {server.name}
-            {/* <NavigationItem
+            <NavigationItem
               id={server.id}
               name={server.name}
               imageUrl={server.imageUrl}
-            /> */}
+            />
           </div>
         ))}
+        <NavigationAddServer/>
       </ScrollArea>
       <div className="pb-3 mt-auto flex flex-col items-center gap-y-4">
         <ModeToggle />
