@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Arrow, TooltipArrow } from "@radix-ui/react-tooltip";
 
 type CustomTooltipProps = {
   label: string;
@@ -22,12 +23,11 @@ const CustomTooltip = ({
 }: CustomTooltipProps) => {
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={10}>
-        <TooltipTrigger asChild>
-          {children}
-        </TooltipTrigger>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent side={side} align={align}>
           <p>{label}</p>
+          <TooltipArrow />
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

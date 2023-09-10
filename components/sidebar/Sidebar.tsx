@@ -6,10 +6,10 @@ import { ModeToggle } from "@/components/toggle";
 import { UserButton } from "@clerk/nextjs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import NavigationItem from "@/components/navigation/navigation-item";
-import NavigationAddServer from "./navigation-add-server";
+import SidebarItem from "@/components/sidebar/SidebarItem";
+import SidebarButton from "./SidebarButton";
 
-const NavigationSidebar = async () => {
+const Sidebar = async () => {
   const profile = await currentProfile();
 
   if (!profile) {
@@ -32,14 +32,14 @@ const NavigationSidebar = async () => {
       <ScrollArea className="flex-1 w-full">
         {servers.map((server) => (
           <div key={server.id} className="mb-4">
-            <NavigationItem
+            <SidebarItem
               id={server.id}
               name={server.name}
               imageUrl={server.imageUrl}
             />
           </div>
         ))}
-        <NavigationAddServer/>
+        <SidebarButton/>
       </ScrollArea>
       <div className="pb-3 mt-auto flex flex-col items-center gap-y-4">
         <ModeToggle />
@@ -56,4 +56,4 @@ const NavigationSidebar = async () => {
   );
 };
 
-export default NavigationSidebar;
+export default Sidebar;

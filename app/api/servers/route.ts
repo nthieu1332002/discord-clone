@@ -21,10 +21,25 @@ export const POST = async (req: Request) => {
                         { profileId: profile.id, role: MemberRole.ADMIN }
                     ]
                 },
-                channels: {
+                categories: {
                     create: [
-                        { name: "general", profileId: profile.id }
+                        {
+                            name: "text channels",
+                            channels: {
+                                create: [
+                                    { name: "general", profileId: profile.id}
+                                ]
+                            }
+                        }
                     ]
+                },
+
+            },
+            include: {
+                categories: {
+                    include: {
+                        channels: true,
+                    }
                 }
             }
         });

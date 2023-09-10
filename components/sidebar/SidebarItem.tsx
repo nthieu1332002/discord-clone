@@ -2,16 +2,15 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import React from "react";
 import CustomTooltip from "@/components/custom-tooltip";
 
-type NavigationItemProps = {
+type SidebarItemProps = {
   id: string;
   imageUrl: string;
   name: string;
 };
 
-const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
+const SidebarItem = ({ id, imageUrl, name }: SidebarItemProps) => {
   const params = useParams();
   const router = useRouter();
   const onClick = () => {
@@ -19,7 +18,7 @@ const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
   };
   return (
     <CustomTooltip label={name} side="right" align="center">
-      <button onClick={onClick} className="group relative flex items-center">
+      <button onClick={onClick} className="group relative flex items-center active:translate-y-[1px]">
         <div
           className={cn(
             "absolute left-0 bg-primary rounded-r-full transition-all w-[3.5px]",
@@ -46,4 +45,4 @@ const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
   );
 };
 
-export default NavigationItem;
+export default SidebarItem;

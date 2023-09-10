@@ -38,7 +38,7 @@ model Server {
   profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   members Member[]
-  channels Channel[]
+  categories Category[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +75,21 @@ model Member {
   @@index([serverId])
 }
 
+model Category {
+  id String @id @default(uuid())
+  name String
+  
+  serverId String
+  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  channels Channel[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([serverId])
+}
+
 enum ChannelType {
   TEXT
   AUDIO
@@ -89,8 +104,8 @@ model Channel {
   profileId String
   profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  serverId String
-  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   messages Message[]
 
@@ -98,7 +113,7 @@ model Channel {
   updatedAt DateTime @updatedAt
 
   @@index([profileId])
-  @@index([serverId])
+  @@index([categoryId])
 }
 
 //message in server
