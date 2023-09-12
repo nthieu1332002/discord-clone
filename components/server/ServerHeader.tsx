@@ -1,3 +1,4 @@
+"use client"
 import { Server } from "@prisma/client";
 import {
   DropdownMenu,
@@ -18,12 +19,15 @@ import {
 } from "lucide-react";
 
 import React from "react";
+import { useModal } from "@/hooks/useModal";
 type ServerHeaderProps = {
   server: Server;
 };
 
 const ServerHeader = ({ server }: ServerHeaderProps) => {
-    const serverName = server.name.substring(0, 20) + "..."
+  const serverName = server.name.substring(0, 20) + "...";
+  const { onOpen } = useModal();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none" asChild>
@@ -37,24 +41,29 @@ const ServerHeader = ({ server }: ServerHeaderProps) => {
           <DropdownMenuItem className="text-indigo-400 text-sm cursor-pointer hover:text-white hover:bg-indigo-500">
             Invite People
             <DropdownMenuShortcut>
-              <UserPlus2 className="h-4 w-4 ml-auto"/>
+              <UserPlus2 className="h-4 w-4 ml-auto" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500">
             Server Settings
             <DropdownMenuShortcut>
-              <Settings className="h-4 w-4 ml-auto"/>
+              <Settings className="h-4 w-4 ml-auto" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500">
             Create Channel
             <DropdownMenuShortcut>
-              <PlusCircle className="h-4 w-4 ml-auto"/>
+              <PlusCircle className="h-4 w-4 ml-auto" />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500">
+          <DropdownMenuItem
+            onClick={() => onOpen("createCategory")}
+            className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500"
+          >
             Create Category
-            <DropdownMenuShortcut><PlusSquare className="h-4 w-4 ml-auto"/></DropdownMenuShortcut>
+            <DropdownMenuShortcut>
+              <PlusSquare className="h-4 w-4 ml-auto" />
+            </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -62,7 +71,7 @@ const ServerHeader = ({ server }: ServerHeaderProps) => {
         <DropdownMenuItem className="text-red-500 text-sm cursor-pointer hover:text-white hover:bg-red-500">
           Delete Server
           <DropdownMenuShortcut>
-            <Trash className="h-4 w-4 ml-auto"/>
+            <Trash className="h-4 w-4 ml-auto" />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

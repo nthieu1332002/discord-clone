@@ -6,10 +6,10 @@ import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
     try {
-        const { name, imageUrl } = await req.json();
         const profile = await currentProfile();
         if (!profile) return new NextResponse("Unauthorized", { status: 401 })
-
+        
+        const { name, imageUrl } = await req.json();
         const server = await db.server.create({
             data: {
                 name,

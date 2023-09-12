@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Arrow, TooltipArrow } from "@radix-ui/react-tooltip";
+import { TooltipArrow } from "@radix-ui/react-tooltip";
 
 type CustomTooltipProps = {
   label: string;

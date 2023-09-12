@@ -15,7 +15,6 @@ const ServerSidebar = async ({ id }: { id: string }) => {
     where: { id: id },
     include: {
       categories: {
-        
         orderBy: { createdAt: "asc" },
         include: {
           channels: {
@@ -37,7 +36,7 @@ const ServerSidebar = async ({ id }: { id: string }) => {
         <ServerHeader server={server} />
         <ScrollArea className="p-3">
           {server.categories.map((item) => {
-            return <CategoryItem key={item.id} name={item.name} channels={item.channels} />;
+            return <CategoryItem key={item.id} category={item} />;
           })}
         </ScrollArea>
       </div>
