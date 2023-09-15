@@ -139,7 +139,7 @@ export const CreateChannelModal = () => {
                             <FormLabel className="cursor-pointer flex items-center gap-3 font-normal">
                               {item.icon}
                               <div className="flex flex-col gap-1">
-                                <p className="text-gray-200">{item.name}</p>
+                                <p className={cn("dark:text-gray-200", field.value !== item.name ? "text-zinc-800": "text-zinc-100")}>{item.name}</p>
                                 <span className="text-xs">
                                   {item.description}
                                 </span>
@@ -160,7 +160,6 @@ export const CreateChannelModal = () => {
                 control={form.control}
                 name="name"
                 render={({ field }) => {
-                  console.log("field", field);
                   return (
                     <FormItem>
                       <FormLabel className="uppercase text-xs font-bold ">
@@ -169,7 +168,7 @@ export const CreateChannelModal = () => {
                       <FormControl>
                         <Input
                           disabled={isLoading}
-                          className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                          className="border-2 focus-visible:ring-0 focus-visible:ring-offset-0"
                           placeholder="new-channel"
                           icon={<Hash className="h-4 w-4" />}
                           onChange={(event) => {

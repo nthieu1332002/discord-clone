@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import React from "react";
 import ServerHeader from "./ServerHeader";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChannelType } from "@prisma/client";
 import CategoryItem from "../categories/CategoryItem";
 
 const ServerSidebar = async ({ id }: { id: string }) => {
@@ -24,7 +23,6 @@ const ServerSidebar = async ({ id }: { id: string }) => {
       },
     },
   });
-  console.log(server);
   if (!server) return redirect("/");
   // const textChannels = server.channels.filter(e => e.type === ChannelType.TEXT)
   // const audioChannels = server.channels.filter(e => e.type === ChannelType.AUDIO)

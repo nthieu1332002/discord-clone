@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Server } from "@prisma/client";
 import {
   DropdownMenu,
@@ -25,7 +25,7 @@ type ServerHeaderProps = {
 };
 
 const ServerHeader = ({ server }: ServerHeaderProps) => {
-  const serverName = server.name.substring(0, 20) + "...";
+  const serverName = server.name.length > 20 ? server.name.substring(0, 20) + "..." : server.name;
   const { onOpen } = useModal();
 
   return (
@@ -38,7 +38,10 @@ const ServerHeader = ({ server }: ServerHeaderProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="px-1 py-2 w-56 text-xs font-normal text-black dark:text-neutral-400 space-y-[2px]">
         <DropdownMenuGroup>
-          <DropdownMenuItem className="text-indigo-400 text-sm cursor-pointer hover:text-white hover:bg-indigo-500">
+          <DropdownMenuItem
+            onClick={() => onOpen("invite", {server})}
+            className="text-indigo-400 text-sm cursor-pointer hover:text-white hover:bg-indigo-500"
+          >
             Invite People
             <DropdownMenuShortcut>
               <UserPlus2 className="h-4 w-4 ml-auto" />

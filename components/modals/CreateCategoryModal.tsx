@@ -25,12 +25,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
-import { Hash, HashIcon, Volume2Icon } from "lucide-react";
-import { iconMap } from "@/components/categories/CategoryItem";
-import { useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(1, {
