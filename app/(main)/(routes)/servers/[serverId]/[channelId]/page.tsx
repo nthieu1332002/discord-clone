@@ -23,6 +23,13 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
     where: {
       id: params.channelId,
     },
+    include: {
+      category: {
+        select: {
+          serverId: true,
+        },
+      },
+    },
   });
 
   const member = await db.member.findFirst({
@@ -35,14 +42,19 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
       <ChatHeader name={channel.name} type={channel.type} />
-      <ChatContent channel={channel} />
+      <ChatContent
+        apiUrl="/api/messages"
+        channel={channel}
+        paramKey="channelId"
+        paramValue={channel.id}
+      />
       <ChatInput
         name={channel.name}
         type="channel"
         apiUrl="/api/socket/messages"
         query={{
           channelId: channel.id,
-          categoryId: channel.categoryId,
+          serverId: channel.category.serverId,
         }}
       />
     </div>

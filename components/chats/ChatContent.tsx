@@ -2,27 +2,49 @@
 import { useChatScroll } from "@/hooks/useChatScroll";
 import { Channel, ChannelType } from "@prisma/client";
 import { Hash } from "lucide-react";
-import React, { ElementRef, useRef } from "react";
+import React, { ElementRef, Fragment, useRef } from "react";
+import Message from "./Message";
+import { useMessage } from "@/hooks/useMessage";
+import { useMessageQuery } from "@/hooks/useMessageQuery";
+import { MessageWithMemberWithProfile } from "@/types";
 
-type Props = {
+type ChatContentProps = {
+  apiUrl: string;
   channel: Channel;
+  paramKey: "channelId" | "conversationId";
+  paramValue: string;
 };
 
-const ChatContent = ({ channel }: Props) => {
+const ChatContent = ({
+  paramKey,
+  paramValue,
+  apiUrl,
+  channel,
+}: ChatContentProps) => {
   const chatRef = useRef<ElementRef<"div">>(null);
   const bottomRef = useRef<ElementRef<"div">>(null);
+  const queryKey = `chat:${channel.id}`;
+  const addKey = `chat:${channel.id}:messages`;
+  const updateKey = `chat:${channel.id}:messages:update`;
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useMessageQuery({
+      queryKey,
+      apiUrl,
+      paramKey,
+      paramValue,
+    });
+    console.log("data", data);
+  useMessage({ queryKey, addKey, updateKey });
   useChatScroll({
     chatRef,
     bottomRef,
-    // loadMore: fetchNextPage,
-    // shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    // count: data?.pages?.[0]?.items?.length ?? 0,
+    loadMore: fetchNextPage,
+    shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+    count: data?.pages?.[0]?.items?.length ?? 0,
   });
   return (
-    <div
-      ref={chatRef}
-      className="flex-1 flex flex-col py-4 overflow-y-auto "
-    >
+    <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto ">
       <div className="flex-1" />
       <div className="space-y-2 px-4 mb-4">
         {channel.type === ChannelType.TEXT && (
@@ -36,6 +58,28 @@ const ChatContent = ({ channel }: Props) => {
         <p className="text-zinc-600 dark:text-zinc-400 text-sm">
           This is the start of the #${channel.name} channel.
         </p>
+      </div>
+      <div className="flex flex-col-reverse gap-2">
+
+        {data?.pages?.map((group, i) => (
+          <Fragment key={i}>
+            {group.items.map((message: MessageWithMemberWithProfile) => (
+              <Message
+                key={message.id}
+                // messageId={message.id}
+                // currentMember={member}
+                member={message.member}
+                content={message.content}
+                // fileUrl={message.fileUrl}
+                // deleted={message.deleted}
+                // timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                // isUpdated={message.updatedAt !== message.createdAt}
+                // socketUrl={socketUrl}
+                // socketQuery={socketQuery}
+              />
+            ))}
+          </Fragment>
+        ))}
       </div>
       <div ref={bottomRef} />
     </div>
