@@ -68,6 +68,7 @@ const ChatContent = ({
                 key={message.id}
                 // messageId={message.id}
                 // currentMember={member}
+                message={message}
                 member={message.member}
                 content={message.content}
                 // fileUrl={message.fileUrl}

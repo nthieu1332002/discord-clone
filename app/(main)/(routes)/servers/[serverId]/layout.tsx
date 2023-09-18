@@ -1,3 +1,4 @@
+import Member from "@/components/members/Member";
 import ServerSidebar from "@/components/server/ServerSidebar";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
@@ -25,12 +26,20 @@ const ServerIdLayout = async ({
         },
       },
     },
+    include: {
+      members: {
+        include: {
+          profile: true
+        }
+      }
+    }
   });
   if (!server) return redirect("/");
   return (
     <div className="h-full">
       <ServerSidebar id={params.serverId} />
-      <main className="h-full md:pl-60">{children}</main>
+      <main className="h-full md:pl-60 md:pr-60">{children}</main>
+      <Member members={server.members}/>
     </div>
   );
 };

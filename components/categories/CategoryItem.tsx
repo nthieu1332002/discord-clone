@@ -88,7 +88,7 @@ const CategoryItem = ({ category }: { category: CategoryWithChannels }) => {
               key={item.id}
               onClick={() => onClick(item.id)}
               className={cn(
-                "group/item cursor-pointer flex items-center gap-1 rounded-md px-4 py-[0.4rem] text-sm text-zinc-400",
+                "group cursor-pointer flex items-center gap-1 rounded-md px-4 py-[0.4rem] text-sm text-zinc-400",
                 params?.channelId === item.id
                   ? "bg-zinc-700/20 dark:bg-zinc-700"
                   : "hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
@@ -107,7 +107,7 @@ const CategoryItem = ({ category }: { category: CategoryWithChannels }) => {
               <CustomTooltip side="top" align="center" label="Create Invite">
                 <UserPlus
                   className={cn(
-                    "h-4 w-4 ml-auto invisible group-hover/item:visible",
+                    "h-4 w-4 ml-auto invisible group-hover:visible",
                     params?.channelId === item.id && "visible"
                   )}
                 />

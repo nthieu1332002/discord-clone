@@ -70,7 +70,6 @@ export async function GET(
             nextCursor = messages[NUMBER - 1].id;
         }
 
-        console.log("messages", messages);
         return NextResponse.json({
             items: messages,
             nextCursor
