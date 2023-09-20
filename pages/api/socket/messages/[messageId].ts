@@ -23,7 +23,7 @@ export default async function handler(
     if (!profile) return res.status(401).json({ error: "Unauthorized" });
     if (!serverId) return res.status(400).json({ error: "Server ID missing" });
     if (!channelId) return res.status(400).json({ error: "Channel ID missing" });
-    
+
     const server = await db.server.findFirst({
       where: {
         id: serverId as string,
@@ -44,11 +44,11 @@ export default async function handler(
       where: {
         id: channelId as string,
         category: {
-            serverId: serverId as string
+          serverId: serverId as string
         }
       },
     });
-  
+
     if (!channel) return res.status(404).json({ error: "Channel not found" });
 
     const member = server.members.find((member) => member.profileId === profile.id);
@@ -121,7 +121,6 @@ export default async function handler(
     const updateKey = `chat:${channelId}:messages:update`;
 
     res?.socket?.server?.io?.emit(updateKey, message);
-console.log("message", message);
     return res.status(200).json(message);
   } catch (error) {
     console.log("[MESSAGE_ID] Error", error);

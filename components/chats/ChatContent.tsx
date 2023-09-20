@@ -34,7 +34,6 @@ const ChatContent = ({
       paramKey,
       paramValue,
     });
-    console.log("data", data);
   useMessage({ queryKey, addKey, updateKey });
   useChatScroll({
     chatRef,
@@ -70,7 +69,6 @@ const ChatContent = ({
                 // currentMember={member}
                 message={message}
                 member={message.member}
-                content={message.content}
                 // fileUrl={message.fileUrl}
                 // deleted={message.deleted}
                 // timestamp={format(new Date(message.createdAt), DATE_FORMAT)}

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import ModalProvider from "@/components/providers/modal-provider";
 import SocketProvider from "@/components/providers/socket-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
+import ActiveProvider from "@/components/providers/active-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     "Discord is the easiest way to talk over voice, video, and text. Talk, chat, hang out, and stay close with your friends and communities.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -44,6 +45,7 @@ export default function RootLayout({
           >
             <SocketProvider>
               <ModalProvider />
+              <ActiveProvider/>
               <QueryProvider>{children}</QueryProvider>
             </SocketProvider>
           </ThemeProvider>

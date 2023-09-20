@@ -1,7 +1,6 @@
 import ChatContent from "@/components/chats/ChatContent";
 import ChatHeader from "@/components/chats/ChatHeader";
 import { ChatInput } from "@/components/chats/ChatInput";
-import { Separator } from "@/components/ui/separator";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";

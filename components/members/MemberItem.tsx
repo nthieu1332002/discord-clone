@@ -3,21 +3,31 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MemberRole, Profile } from "@prisma/client";
 import { Crown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   profile: Profile;
   role: MemberRole;
+  status: "online" | "offline";
 };
 
-const MemberItem = ({ profile, role }: Props) => {
+const MemberItem = ({ profile, role, status }: Props) => {
   return (
     <div className="group px-2 py-1 flex items-center gap-2 cursor-pointer rounded-md hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
-      <Avatar className="cursor-pointer w-9 h-9">
-        <AvatarImage src={profile.imageUrl} />
-        <AvatarFallback>{profile.name}</AvatarFallback>
-      </Avatar>
+      <div className="relative">
+        <Avatar className="cursor-pointer w-9 h-9">
+          <AvatarImage src={profile.imageUrl} />
+          <AvatarFallback>{profile.name}</AvatarFallback>
+        </Avatar>
+        <span
+          className={cn(
+            "absolute block rounded-full  ring-2 dark:ring-[#2B2D31] ring-bg-[#F2F3F5] bottom-0 right-0 h-[11px] w-[11px]",
+            status === "online" ? "bg-green-500" : "bg-red-500"
+          )}
+        />
+      </div>
       <div className="flex flex-col justify-center items-center gap-1">
-        <p className="text-base font-medium text-black group-hover:text-gray-700/80 dark:text-gray-400 dark:group-hover:text-gray-200">
+        <p className="text-sm font-medium text-black group-hover:text-gray-700/80 dark:text-gray-400 dark:group-hover:text-gray-200">
           {profile.name.length > 15
             ? profile.name.substring(0, 15) + "..."
             : profile.name}

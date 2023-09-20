@@ -17,12 +17,10 @@ type Props = {
   member: Member & {
     profile: Profile;
   };
-  content: string;
   message: Message;
 };
 const DATE_FORMAT = "MM/dd/yyyy hh:mm aa";
-const Message = ({ message, member, content }: Props) => {
-  console.log("message", message);
+const Message = ({ message, member }: Props) => {
   const onCopy = () => {
     navigator.clipboard.writeText(message.content);
   };
