@@ -13,8 +13,7 @@ type Props = {
 
 const Member = ({ members }: Props) => {
   const { members: active } = useMember();
-  console.log("active", active);
-  console.log("members", members);
+
   const online = members.filter((obj) => active.includes(obj.profileId));
   const offline = members.filter((obj) => !active.includes(obj.profileId));
 

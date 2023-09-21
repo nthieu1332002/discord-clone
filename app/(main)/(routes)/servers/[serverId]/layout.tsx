@@ -39,7 +39,7 @@ const ServerIdLayout = async ({
     <div className="h-full">
       <ServerSidebar id={params.serverId} />
       <main className="h-full md:pl-60 md:pr-60">{children}</main>
-      <Member members={server.members} id={profile.id}/>
+      <Member members={server.members} />
     </div>
   );
 };

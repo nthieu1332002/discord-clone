@@ -1,5 +1,7 @@
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import React, { useEffect, useState } from "react";
+import qs from "query-string";
+import * as z from "zod";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Member, MemberRole, Message, Profile } from "@prisma/client";
 import { format } from "date-fns";
 import {
@@ -11,24 +13,89 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, Edit, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Copy, MoreHorizontal, Pencil, Trash } from "lucide-react";
+
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import axios from "axios";
+import { useModal } from "@/hooks/useModal";
 
 type Props = {
+  currentProfile: Member;
   member: Member & {
     profile: Profile;
   };
   message: Message;
+  socketUrl: string;
+  socketQuery: Record<string, string>;
 };
 const DATE_FORMAT = "MM/dd/yyyy hh:mm aa";
-const Message = ({ message, member }: Props) => {
+
+const formSchema = z.object({
+  content: z.string().min(1).max(1000),
+});
+
+const Message = ({
+  currentProfile,
+  message,
+  member,
+  socketUrl,
+  socketQuery,
+}: Props) => {
+  const { onOpen } = useModal();
+  const [isEditing, setIsEditing] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: message.content,
+    },
+  });
+  const isLoading = form.formState.isSubmitting;
   const onCopy = () => {
     navigator.clipboard.writeText(message.content);
   };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const url = qs.stringifyUrl({
+        url: `${socketUrl}/${message.id}`,
+        query: socketQuery,
+      });
+
+      await axios.patch(url, values);
+
+      form.reset();
+      setIsEditing(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // useEffect(() => {
+  //   form.reset({
+  //     content: content,
+  //   })
+  // }, [content]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: any) => {
+      if (event.key === "Escape" || event.keyCode === 27) {
+        setIsEditing(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keyDown", handleKeyDown);
+  }, []);
   return (
     <div className="relative group px-4 py-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-800/50 flex gap-3">
       <Avatar className="cursor-pointer">
         <AvatarImage src={member.profile.imageUrl} />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback>{member.profile.name}</AvatarFallback>
       </Avatar>
       <div className="flex flex-col gap-1">
         <div className="flex gap-2 items-center text-zinc-600 dark:text-zinc-200">
@@ -39,7 +106,41 @@ const Message = ({ message, member }: Props) => {
             {format(new Date(message.createdAt), DATE_FORMAT)}
           </span>
         </div>
-        <p className="text-sm font-light">{message.content}</p>
+        {isEditing ? (
+          <Form {...form}>
+            <form
+              className="flex items-center w-full gap-x-2 pt-2"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <div className="relative w-full">
+                        <Input
+                          disabled={isLoading}
+                          className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                          placeholder="Edited message"
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <Button disabled={isLoading} size="sm" variant="primary">
+                Save
+              </Button>
+            </form>
+            <span className="text-[10px] mt-1 text-zinc-400">
+              Press escape to cancel, enter to save
+            </span>
+          </Form>
+        ) : (
+          <p className="text-sm font-light">{message.content}</p>
+        )}
       </div>
       <div className="absolute invisible group-hover:visible right-2 -top-2">
         <DropdownMenu>
@@ -53,15 +154,17 @@ const Message = ({ message, member }: Props) => {
             className="px-1 py-2 w-56 text-xs font-normal text-black dark:text-neutral-400 space-y-[2px]"
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                // onClick={() => onOpen("invite", { server })}
-                className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-500"
-              >
-                Edit Message
-                <DropdownMenuShortcut>
-                  <Pencil className="h-4 w-4 ml-auto" />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
+              {currentProfile.id === member.id && (
+                <DropdownMenuItem
+                  onClick={() => setIsEditing(true)}
+                  className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-500"
+                >
+                  Edit Message
+                  <DropdownMenuShortcut>
+                    <Pencil className="h-4 w-4 ml-auto" />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={onCopy}
                 className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-500"
@@ -72,9 +175,19 @@ const Message = ({ message, member }: Props) => {
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {member.role === MemberRole.ADMIN ||
-              member.role === MemberRole.MODERATOR ? (
-                <DropdownMenuItem className="text-red-500 text-sm cursor-pointer hover:text-white hover:bg-red-500 dark:hover:bg-red-500">
+              {currentProfile.id === member.id ||
+              currentProfile.role === MemberRole.ADMIN ||
+              currentProfile.role === MemberRole.MODERATOR ? (
+                <DropdownMenuItem
+                  onClick={() =>
+                    onOpen("deleteMessage", {
+                      apiUrl: `${socketUrl}/${message.id}`,
+                      query: socketQuery,
+                      other: message,
+                    })
+                  }
+                  className="text-red-500 text-sm cursor-pointer hover:text-white hover:bg-red-500 dark:hover:bg-red-500"
+                >
                   Delete message
                   <DropdownMenuShortcut>
                     <Trash className="h-4 w-4 ml-auto" />

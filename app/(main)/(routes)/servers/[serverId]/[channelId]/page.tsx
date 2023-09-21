@@ -42,10 +42,16 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
     <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
       <ChatHeader name={channel.name} type={channel.type} />
       <ChatContent
+        currentProfile={member}
         apiUrl="/api/messages"
         channel={channel}
         paramKey="channelId"
         paramValue={channel.id}
+        socketUrl="/api/socket/messages"
+        socketQuery={{
+          channelId: channel.id,
+          serverId: channel.category.serverId,
+        }}
       />
       <ChatInput
         name={channel.name}

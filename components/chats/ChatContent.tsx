@@ -1,6 +1,6 @@
 "use client";
 import { useChatScroll } from "@/hooks/useChatScroll";
-import { Channel, ChannelType } from "@prisma/client";
+import { Channel, ChannelType, Member } from "@prisma/client";
 import { Hash } from "lucide-react";
 import React, { ElementRef, Fragment, useRef } from "react";
 import Message from "./Message";
@@ -9,17 +9,23 @@ import { useMessageQuery } from "@/hooks/useMessageQuery";
 import { MessageWithMemberWithProfile } from "@/types";
 
 type ChatContentProps = {
+  currentProfile: Member;
   apiUrl: string;
   channel: Channel;
   paramKey: "channelId" | "conversationId";
   paramValue: string;
+  socketUrl: string;
+  socketQuery: Record<string, string>;
 };
 
 const ChatContent = ({
+  currentProfile,
   paramKey,
   paramValue,
   apiUrl,
   channel,
+  socketUrl,
+  socketQuery,
 }: ChatContentProps) => {
   const chatRef = useRef<ElementRef<"div">>(null);
   const bottomRef = useRef<ElementRef<"div">>(null);
@@ -59,22 +65,17 @@ const ChatContent = ({
         </p>
       </div>
       <div className="flex flex-col-reverse gap-2">
-
         {data?.pages?.map((group, i) => (
           <Fragment key={i}>
             {group.items.map((message: MessageWithMemberWithProfile) => (
               <Message
                 key={message.id}
-                // messageId={message.id}
-                // currentMember={member}
+                currentProfile={currentProfile}
                 message={message}
                 member={message.member}
-                // fileUrl={message.fileUrl}
-                // deleted={message.deleted}
-                // timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
                 // isUpdated={message.updatedAt !== message.createdAt}
-                // socketUrl={socketUrl}
-                // socketQuery={socketQuery}
+                socketUrl={socketUrl}
+                socketQuery={socketQuery}
               />
             ))}
           </Fragment>
