@@ -79,7 +79,6 @@ const Message = ({
   //     content: content,
   //   })
   // }, [content]);
-
   useEffect(() => {
     const handleKeyDown = (event: any) => {
       if (event.key === "Escape" || event.keyCode === 27) {

@@ -23,18 +23,20 @@ const ServerSidebar = async ({ id }: { id: string }) => {
       },
     },
   });
-  if (!server) return redirect("/");
-  // const textChannels = server.channels.filter(e => e.type === ChannelType.TEXT)
-  // const audioChannels = server.channels.filter(e => e.type === ChannelType.AUDIO)
-  // const videoChannels = server.channels.filter(e => e.type === ChannelType.VIDEO)
-
+  const member = await db.member.findFirst({
+    where: {
+      serverId: id,
+      profileId: profile.id,
+    },
+  });
+  if (!server || !member) return redirect("/");
   return (
     <div className="hidden md:flex h-full w-60 flex-col fixed inset-y-0">
       <div className="flex flex-col h-full w-full dark:bg-[#2B2D31] bg-[#F2F3F5]">
         <ServerHeader server={server} />
         <ScrollArea className="p-3">
           {server.categories.map((item) => {
-            return <CategoryItem key={item.id} category={item} />;
+            return <CategoryItem key={item.id} currentProfile={member} category={item} />;
           })}
         </ScrollArea>
       </div>

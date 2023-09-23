@@ -1,29 +1,16 @@
 "use client";
 
-import qs from "query-string";
 import axios from "axios";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useParams, useRouter } from "next/navigation";
 import { useModal } from "@/hooks/useModal";
 import { useState } from "react";
 import { Check, Copy, RefreshCw } from "lucide-react";
@@ -35,7 +22,7 @@ export const InviteModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const origin = useOrigin();
-
+  
   const { server } = data;
   const isModalOpen = isOpen && type === "invite";
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;

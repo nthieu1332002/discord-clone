@@ -22,7 +22,7 @@ export const DeleteMessageModal = () => {
 
   const isModalOpen = isOpen && type === "deleteMessage";
   const { apiUrl, query, other } = data;
-  console.log(other);
+  const message = other;
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
@@ -56,19 +56,19 @@ export const DeleteMessageModal = () => {
         </DialogHeader>
         <div className="relative group px-4 py-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-800/50 flex gap-3">
           <Avatar className="cursor-pointer">
-            <AvatarImage src={other?.member?.profile.imageUrl} />
-            <AvatarFallback>{other?.member?.profile.name}</AvatarFallback>
+            <AvatarImage src={message?.member?.profile.imageUrl} />
+            <AvatarFallback>{message?.member?.profile.name}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1">
             <div className="flex gap-2 items-center text-zinc-600 dark:text-zinc-200">
               <p className="text-sm font-semibold cursor-pointer hover:underline">
-                {other?.member?.profile.name}
+                {message?.member?.profile.name}
               </p>
               <span className="text-xs text-zinc-500 dark:text-zinc-400 cursor-default">
-                {format(new Date(other?.createdAt), DATE_FORMAT)}
+                {message && format(new Date(message?.createdAt), DATE_FORMAT)}
               </span>
             </div>
-            <p className="text-sm font-light">{other?.content}</p>
+            <p className="text-sm font-light">{message?.content}</p>
           </div>
         </div>
         <DialogFooter className="bg-white dark:bg-zinc-800 flex items-center text-sm gap-2 px-6 py-4">

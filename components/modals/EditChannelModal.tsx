@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -38,13 +37,14 @@ const formSchema = z.object({
   type: z.nativeEnum(ChannelType),
 });
 
-export const CreateChannelModal = () => {
-  const { isOpen, onClose, type, data } = useModal();
+export const EditChannelModal = () => {
+  const { onOpen, isOpen, onClose, type, data } = useModal();
 
-  const { other } = data;
+  const { channel, other } = data;
+  console.log("data", data);
   const router = useRouter();
-  const isModalOpen = isOpen && type === "createChannel";
-  const [inputValue, setInputValue] = useState("");
+  const isModalOpen = isOpen && type === "editChannel";
+  const [inputValue, setInputValue] = useState(channel?.name);
 
   const handleChange = (e: any) => {
     const value = e.target.value;
@@ -54,8 +54,8 @@ export const CreateChannelModal = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      type: ChannelType.TEXT,
+      name: channel?.name ? channel.name : "",
+      type: channel?.type ? channel.type : ChannelType.TEXT,
     },
   });
   const isLoading = form.formState.isSubmitting;
@@ -63,12 +63,13 @@ export const CreateChannelModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const url = qs.stringifyUrl({
-        url: "/api/channels",
+        url: `/api/channels/${channel?.id}`,
         query: {
           categoryId: other.id,
+          serverId: other.serverId,
         },
       });
-      await axios.post(url, values);
+      await axios.patch(url, values);
 
       form.reset();
       router.refresh();
@@ -101,11 +102,8 @@ export const CreateChannelModal = () => {
       <DialogContent className="bg-white dark:bg-[#2B2D31] text-zinc-500 dark:text-gray-200 p-0 overflow-hidden">
         <DialogHeader className="pt-6 px-6">
           <DialogTitle className="text-xl font-semibold">
-            Create Channel
+            Edit Channel {channel?.name ? channel.name : null}
           </DialogTitle>
-          {other?.name ? (
-            <DialogDescription className="">in {other.name}</DialogDescription>
-          ) : null}
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -178,7 +176,7 @@ export const CreateChannelModal = () => {
                           className="border-2 focus-visible:ring-0 focus-visible:ring-offset-0"
                           placeholder="new-channel"
                           icon={
-                            field.value === ChannelType.TEXT ? (
+                            form.getValues().type === ChannelType.TEXT ? (
                               <Hash className="h-4 w-4" />
                             ) : (
                               <Volume2Icon className="h-4 w-4" />
@@ -196,6 +194,24 @@ export const CreateChannelModal = () => {
                   );
                 }}
               />
+
+              <p className="text-center text-xs text-muted-foreground">hoặc</p>
+              <div className="border-[1px] border-red-500 rounded-md p-3">
+                <p className="text-base font-semibold">Delete this channel</p>
+                <p className="text-sm text-muted-foreground">
+                  Once you delete a channel there is no going back. Please be
+                  certain.
+                </p>
+                <Button
+                  className="mt-1"
+                  size="sm"
+                  variant="destructive"
+                  disabled={isLoading}
+                  onClick={() => onOpen("deleteChannel", { channel: channel, other: other})}
+                >
+                  Delete this channel
+                </Button>
+              </div>
             </div>
             <DialogFooter className="bg-white dark:bg-zinc-800 flex items-center text-sm gap-2 px-6 py-4">
               <p
@@ -205,7 +221,7 @@ export const CreateChannelModal = () => {
                 Cancel
               </p>
               <Button variant="primary" disabled={isLoading}>
-                Create Channel
+                Edit Channel
               </Button>
             </DialogFooter>
           </form>

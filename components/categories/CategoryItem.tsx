@@ -5,7 +5,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChannelType } from "@prisma/client";
+import { ChannelType, Member, MemberRole } from "@prisma/client";
 import {
   ChevronDown,
   ChevronRight,
@@ -13,6 +13,7 @@ import {
   Volume2Icon,
   UserPlus,
   Plus,
+  Settings,
 } from "lucide-react";
 import CustomTooltip from "../custom-tooltip";
 import { useParams, useRouter } from "next/navigation";
@@ -24,8 +25,12 @@ export const iconMap = {
   [ChannelType.TEXT]: Hash,
   [ChannelType.VOICE]: Volume2Icon,
 };
+type CategoryProps = {
+  currentProfile: Member;
+  category: CategoryWithChannels;
+};
 
-const CategoryItem = ({ category }: { category: CategoryWithChannels }) => {
+const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
   const params = useParams();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
@@ -79,8 +84,8 @@ const CategoryItem = ({ category }: { category: CategoryWithChannels }) => {
         {category.channels.map((item) => {
           const Icon = iconMap[item.type];
           const channelName =
-          item.name.length > 20
-              ? item.name.substring(0, 20) + "..."
+            item.name.length > 21
+              ? item.name.substring(0, 21) + "..."
               : item.name;
 
           return (
@@ -88,7 +93,7 @@ const CategoryItem = ({ category }: { category: CategoryWithChannels }) => {
               key={item.id}
               onClick={() => onClick(item.id)}
               className={cn(
-                "group cursor-pointer flex items-center gap-1 rounded-md px-4 py-[0.4rem] text-sm text-zinc-400",
+                "group cursor-pointer flex items-center gap-1 rounded-md px-3 py-[0.4rem] text-sm text-zinc-400",
                 params?.channelId === item.id
                   ? "bg-zinc-700/20 dark:bg-zinc-700"
                   : "hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
@@ -104,14 +109,19 @@ const CategoryItem = ({ category }: { category: CategoryWithChannels }) => {
               >
                 {channelName}
               </p>
-              <CustomTooltip side="top" align="center" label="Create Invite">
-                <UserPlus
-                  className={cn(
-                    "h-4 w-4 ml-auto invisible group-hover:visible",
-                    params?.channelId === item.id && "visible"
-                  )}
-                />
-              </CustomTooltip>
+              {currentProfile.role === MemberRole.ADMIN ||
+              currentProfile.role === MemberRole.MODERATOR ? (
+                <CustomTooltip side="top" align="center" label="Edit Channel">
+                  <Settings
+                    fill="true"
+                    onClick={() => onOpen("editChannel", { channel: item, other: category})}
+                    className={cn(
+                      "h-4 w-4 ml-auto invisible group-hover:visible dark:group-hover:text-white",
+                      params?.channelId === item.id && "visible"
+                    )}
+                  />
+                </CustomTooltip>
+              ) : null}
             </div>
           );
         })}
