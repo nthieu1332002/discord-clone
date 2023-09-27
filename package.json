@@ -61,13 +61,16 @@
     "tailwindcss-animate": "^1.0.6",
     "typescript": "5.2.2",
     "uploadthing": "^5.5.2",
+    "use-sound": "^4.0.1",
     "uuid": "^9.0.0",
     "zod": "^3.22.2",
     "zustand": "^4.4.1"
   },
   "devDependencies": {
     "encoding": "^0.1.13",
-    "prisma": "^5.2.0"
+    "file-loader": "^6.2.0",
+    "prisma": "^5.2.0",
+    "url-loader": "^4.1.1"
   },
   "optionalDependencies": {
     "utf-8-validate": "^5.0.10"

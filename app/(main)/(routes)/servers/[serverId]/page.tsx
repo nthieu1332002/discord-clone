@@ -29,6 +29,9 @@ const Server = async ({ params }: Props) => {
         },
         include: {
           channels: {
+            orderBy: {
+              createdAt: "asc",
+            },
             select: {
               id: true
             }

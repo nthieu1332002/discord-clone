@@ -23,14 +23,19 @@ const Sidebar = async () => {
           profileId: profile.id,
         },
       },
-    },
+    }
   });
+  const sortedServers =[...servers.sort((a, b) => {
+    if (a.profileId === profile.id) return -1;
+    if (b.profileId === profile.id) return 1;
+    return 0
+  })];
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-[#1d1d22] bg-[#E3E5E8] py-3">
 
       <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
       <ScrollArea className="flex-1 w-full">
-        {servers.map((server) => (
+        {sortedServers.map((server) => (
           <div key={server.id} className="mb-4">
             <SidebarItem
               id={server.id}

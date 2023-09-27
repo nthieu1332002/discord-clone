@@ -29,6 +29,8 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { ChannelType } from "@prisma/client";
+import { Label } from "../ui/label";
+import { Separator } from "../ui/separator";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -41,7 +43,6 @@ export const EditChannelModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
 
   const { channel, other } = data;
-  console.log("data", data);
   const router = useRouter();
   const isModalOpen = isOpen && type === "editChannel";
   const [inputValue, setInputValue] = useState(channel?.name);
@@ -107,7 +108,7 @@ export const EditChannelModal = () => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-8 px-6">
+            <div className="space-y-5 px-6">
               <FormField
                 control={form.control}
                 name="type"
@@ -195,7 +196,6 @@ export const EditChannelModal = () => {
                 }}
               />
 
-              <p className="text-center text-xs text-muted-foreground">hoặc</p>
               <div className="border-[1px] border-red-500 rounded-md p-3">
                 <p className="text-base font-semibold">Delete this channel</p>
                 <p className="text-sm text-muted-foreground">
@@ -207,7 +207,9 @@ export const EditChannelModal = () => {
                   size="sm"
                   variant="destructive"
                   disabled={isLoading}
-                  onClick={() => onOpen("deleteChannel", { channel: channel, other: other})}
+                  onClick={() =>
+                    onOpen("deleteChannel", { channel: channel, other: other })
+                  }
                 >
                   Delete this channel
                 </Button>

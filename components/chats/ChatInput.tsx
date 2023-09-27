@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { EmojiPicker } from "@/components/emoji-picker";
 import { useModal } from "@/hooks/useModal";
+import { PlayMessageSound } from "@/components/PlayMessageSound";
 
 interface ChatInputProps {
   apiUrl: string;
@@ -55,7 +56,7 @@ export const ChatInput = ({
       });
 
       await axios.post(url, values);
-
+      PlayMessageSound();
       form.reset();
       router.refresh();
     } catch (error) {

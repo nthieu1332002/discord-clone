@@ -18,7 +18,6 @@ export default async function handler(
     const profile = await currentProfileForPageRoute(req);
     const { content } = req.body;
     const { messageId, serverId, channelId } = req.query;
-    console.log("req", req);
 
     if (!profile) return res.status(401).json({ error: "Unauthorized" });
     if (!serverId) return res.status(400).json({ error: "Server ID missing" });

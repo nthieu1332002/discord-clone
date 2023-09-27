@@ -18,8 +18,8 @@ import { Copy, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useModal } from "@/hooks/useModal";
 
@@ -47,6 +47,7 @@ const Message = ({
 }: Props) => {
   const { onOpen } = useModal();
   const [isEditing, setIsEditing] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,7 +67,6 @@ const Message = ({
       });
 
       await axios.patch(url, values);
-
       form.reset();
       setIsEditing(false);
     } catch (error) {

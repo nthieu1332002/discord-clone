@@ -2,8 +2,7 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import React from "react";
-
+import { pusherServer } from "@/lib/pusher";
 type Props = {
   params: {
     inviteCode: string;
@@ -43,7 +42,9 @@ const InvitePage = async ({ params }: Props) => {
       },
     },
   });
-  if (server) return redirect(`/servers/${server.id}`);
+  if (server) {
+    pusherServer.trigger(server.id, "pusher:member_added", profile);
+    return redirect(`/servers/${server.id}`);}
   return null;
 };
 
