@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -35,22 +35,21 @@ const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const { onOpen } = useModal();
-  const cateName =
-    category.name.length > 30
-      ? category.name.substring(0, 30) + "..."
-      : category.name;
 
-  const onClick = (id: string) => {
-    router.push(`/servers/${params?.serverId}/${id}`);
-  };
-  const onAction = (
-    e: React.MouseEvent,
-    type: ModalType,
-    category: CategoryWithChannels
-  ) => {
-    e.stopPropagation();
-    onOpen(type, { other: category });
-  };
+  const onClick = useCallback(
+    (id: string) => {
+      router.push(`/servers/${params?.serverId}/${id}`);
+    },
+    [params?.serverId, router]
+  );
+
+  const onAction = useCallback(
+    (e: React.MouseEvent, type: ModalType, category: CategoryWithChannels) => {
+      e.stopPropagation();
+      onOpen(type, { other: category });
+    },
+    [onOpen]
+  );
   return (
     <Collapsible
       open={isOpen}
@@ -62,14 +61,14 @@ const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
         asChild
       >
         <div className="flex justify-between">
-          <span className="flex items-center  text-xs uppercase font-semibold">
+          <span className="flex items-center truncate text-xs uppercase font-semibold">
             {isOpen ? (
               <ChevronDown className="h-3 w-3 mr-1" />
             ) : (
               <ChevronRight className="h-3 w-3 mr-1" />
             )}
 
-            {cateName}
+            {category.name}
           </span>
           <CustomTooltip side="top" align="center" label="Create Channel">
             <Plus
@@ -114,7 +113,10 @@ const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
                 <CustomTooltip side="top" align="center" label="Edit Channel">
                   <Settings
                     fill="true"
-                    onClick={() => onOpen("editChannel", { channel: item, other: category})}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpen("editChannel", { channel: item, other: category });
+                    }}
                     className={cn(
                       "h-4 w-4 ml-auto invisible group-hover:visible dark:group-hover:text-white",
                       params?.channelId === item.id && "visible"

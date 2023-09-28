@@ -144,7 +144,7 @@ const Message = ({
       <div className="absolute invisible group-hover:visible right-2 -top-2">
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none" asChild>
-            <button className="rounded-md text-primary font-semibold p-2 flex items-center dark:bg-zinc-700 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/60">
+            <button className="rounded-md p-2 flex items-center dark:bg-zinc-700 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/60">
               <MoreHorizontal className="ml-auto h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
