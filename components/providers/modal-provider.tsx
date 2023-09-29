@@ -8,6 +8,7 @@ import { DeleteMessageModal } from "@/components/modals/DeleteMessageModel";
 import { useModal } from "@/hooks/useModal";
 import { EditChannelModal } from "@/components/modals/EditChannelModal";
 import DeleteChannelModal from "../modals/DeleteChannelModal";
+import FileWarning from "../modals/FileWarningModal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -28,6 +29,7 @@ const ModalProvider = () => {
       {isOpen && type === "invite" && <InviteModal />}
       {isOpen && type === "deleteMessage" && <DeleteMessageModal />}
       {isOpen && type === "deleteChannel" && <DeleteChannelModal />}
+      {isOpen && type === "warning" && <FileWarning />}
 
     </>
   );

@@ -29,8 +29,6 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { ChannelType } from "@prisma/client";
-import { Label } from "../ui/label";
-import { Separator } from "../ui/separator";
 
 const formSchema = z.object({
   name: z.string().min(1, {

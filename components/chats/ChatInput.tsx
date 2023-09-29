@@ -5,9 +5,9 @@ import axios from "axios";
 import qs from "query-string";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Pencil, Plus, Trash } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { v4 as uuidv4 } from "uuid";
 import {
   Form,
   FormControl,
@@ -20,10 +20,9 @@ import { Input } from "@/components/ui/input";
 import { EmojiPicker } from "@/components/emoji-picker";
 import { PlayMessageSound } from "@/components/PlayMessageSound";
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
-import CustomTooltip from "../custom-tooltip";
-import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
+import { useModal } from "@/hooks/useModal";
+import PreviewFile from "./PreviewFile";
 
 interface ChatInputProps {
   apiUrl: string;
@@ -31,105 +30,115 @@ interface ChatInputProps {
   name: string;
   type: "conversation" | "channel";
 }
+const MAX_COUNT = 5;
 
-const formSchema = z.object({
-  content: z.string().min(1).max(1000),
-  fileUrl: z.union([z.undefined(), z.instanceof(File)]), //undefinable || file only
-});
+const formSchema = z
+  .object({
+    content: z.string().nonempty().max(1000).optional(),
+    fileUrl: z.array(z.instanceof(File)).max(5).optional(),
+  })
+  .refine(
+    (data) => {
+      // At least one of 'content' or 'fileUrl' must be provided.
+      return (
+        data.content !== undefined ||
+        (data.fileUrl !== undefined && data.fileUrl.length > 0)
+      );
+    },
+    {
+      message: "At least one of 'content' or 'fileUrl' must be provided",
+    }
+  );
 
 export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const router = useRouter();
-  const [previewImage, setPreviewImage] = useState<File>();
-  const [spoiler, setSpoiler] = useState(false);
+  const [previewImage, setPreviewImage] = useState<File[]>([]);
+  const [limit, setLimit] = useState(false);
+  console.log("preview", previewImage);
+  console.log("limit", limit);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
-      fileUrl: undefined,
+      fileUrl: [],
     },
   });
   const isLoading = form.formState.isSubmitting;
+  console.log("form", form.getValues());
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("values", values);
     try {
       const url = qs.stringifyUrl({
         url: apiUrl,
-        query,
+        // query,
       });
 
-      // await axios.post(url, values);
+      await axios.post(url, values);
       PlayMessageSound();
-      setPreviewImage(undefined);
+      setPreviewImage([]);
       form.reset();
       router.refresh();
     } catch (error) {
       console.log(error);
     }
   };
-  const removeAttachment = useCallback(() => {
-    const resetAttachment = () => {
-      setPreviewImage(undefined);
-      form.setValue("fileUrl", undefined);
-    };
+  const handlePreviewFile = (files: File[]) => {
+    const uploaded = [...previewImage];
+    let limitExceeded = false;
+    files.some((file) => {
+      //if this file is not in file list
+      if (uploaded.findIndex((f) => f.name === file.name) === -1) {
+        uploaded.push(file);
+        if (uploaded.length > MAX_COUNT) {
+          setLimit(true);
+          limitExceeded = true;
+        }
+      }
+    });
+    if (!limitExceeded) {
+      setPreviewImage(uploaded);
+      form.setValue("fileUrl", uploaded);
+    }
+  };
 
-    resetAttachment();
-  }, [form]);
+  const removeAttachment = useCallback(
+    (item: File) => {
+      const resetAttachment = () => {
+        const newArray = previewImage.filter((f) => f.name !== item.name);
+        setPreviewImage(newArray);
+        form.setValue("fileUrl", newArray);
+      };
+
+      resetAttachment();
+    },
+    [form, previewImage]
+  );
+  const { onOpen } = useModal();
+
+  useEffect(() => {
+    if (limit) {
+      onOpen("warning");
+    }
+  }, [limit, onOpen]);
   return (
     <Form {...form}>
       <form
         className="relative p-4 pb-6"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        {previewImage ? (
+        {previewImage.length > 0 ? (
           <>
-            <div className="w-full p-4 bg-zinc-200/90 dark:bg-zinc-700/75 rounded-t-md">
-              <div className="relative flex flex-col justify-between p-2 w-[215px] h-[215px] dark:bg-[#2b2d31] bg-zinc-300 rounded-sm">
-                <div className="absolute -right-5 -top-[2px] z-10">
-                  <div className="grid grid-flow-col rounded-md overflow-hidden hover:shadow-md">
-                    <CustomTooltip
-                      side="top"
-                      align="center"
-                      label="Spoiler Attachment"
-                    >
-                      <div
-                        onClick={() => setSpoiler((e) => !e)}
-                        className="cursor-pointer p-2 flex items-center bg-slate-300 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:translate-y-[1px]"
-                      >
-                        {spoiler ? (
-                          <EyeOff className="ml-auto h-4 w-4 text-red-400" />
-                        ) : (
-                          <Eye className="ml-auto h-4 w-4" />
-                        )}
-                      </div>
-                    </CustomTooltip>
-                    
-                    <CustomTooltip
-                      side="top"
-                      align="center"
-                      label="Remove Attachment"
-                    >
-                      <div
-                        onClick={removeAttachment}
-                        className="cursor-pointer p-2 flex items-center text-red-500 bg-slate-300 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:translate-y-[1px]"
-                      >
-                        <Trash className="ml-auto h-4 w-4" />
-                      </div>
-                    </CustomTooltip>
-                  </div>
-                </div>
-                <div className="relative w-full h-[175px] rounded-md overflow-hidden">
-                  <Image
-                    src={URL.createObjectURL(previewImage)}
-                    alt="preview"
-                    layout="fill"
-                    objectFit="contain"
-                    className={cn(spoiler ? "blur-lg" : "")}
+            <div className="flex gap-5 overflow-x-auto w-full p-4 bg-zinc-200/90 dark:bg-zinc-700/75 rounded-t-md">
+              {previewImage.map((item) => {
+                return (
+                  <PreviewFile
+                    key={item.name}
+                    item={item}
+                    removeAttachment={() => removeAttachment(item)}
                   />
-                </div>
-                <p className="text-sm truncate text-zinc-800 dark:text-zinc-300 ">
-                  {previewImage.name}
-                </p>
-              </div>
+                );
+              })}
             </div>
             <Separator className="h-[0.1px] w-full dark:bg-zinc-400 bg-zinc-700" />
           </>
@@ -149,10 +158,11 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                     {...field}
                     type="file"
                     onChange={(e) => {
-                      setPreviewImage(e.target.files[0]);
-                      onChange(e.target.files[0]);
+                      const chosen = [...e.target.files];
+                      handlePreviewFile(chosen);
                     }}
                     className="hidden"
+                    multiple
                   />
                 </FormControl>
                 <FormMessage />
