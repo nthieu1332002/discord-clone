@@ -34,14 +34,14 @@ const MAX_COUNT = 5;
 
 const formSchema = z
   .object({
-    content: z.string().nonempty().max(1000).optional(),
-    fileUrl: z.array(z.instanceof(File)).max(5).optional(),
+    content: z.string().max(1000),
+    fileUrl: z.array(z.instanceof(File)).max(5),
   })
   .refine(
     (data) => {
       // At least one of 'content' or 'fileUrl' must be provided.
       return (
-        data.content !== undefined ||
+        data.content !== "" ||
         (data.fileUrl !== undefined && data.fileUrl.length > 0)
       );
     },
@@ -54,8 +54,7 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const router = useRouter();
   const [previewImage, setPreviewImage] = useState<File[]>([]);
   const [limit, setLimit] = useState(false);
-  console.log("preview", previewImage);
-  console.log("limit", limit);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,15 +65,35 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const isLoading = form.formState.isSubmitting;
   console.log("form", form.getValues());
 
+  const convertBase64 = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("values", values);
     try {
+      const file = [];
+      for (var i = 0; i < values.fileUrl.length; i++) {
+        var base = await convertBase64(values.fileUrl[i]);
+        file.push(base);
+      }
       const url = qs.stringifyUrl({
         url: apiUrl,
-        // query,
+        query,
       });
-
-      await axios.post(url, values);
+      const data = {
+        content: values.content,
+        file: file,
+      };
+      await axios.post(url, data);
       PlayMessageSound();
       setPreviewImage([]);
       form.reset();
@@ -98,6 +117,7 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
     });
     if (!limitExceeded) {
       setPreviewImage(uploaded);
+      setLimit(false);
       form.setValue("fileUrl", uploaded);
     }
   };
@@ -114,10 +134,11 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
     },
     [form, previewImage]
   );
-  const { onOpen } = useModal();
+  const { onOpen, isOpen } = useModal();
 
   useEffect(() => {
     if (limit) {
+      setLimit(false);
       onOpen("warning");
     }
   }, [limit, onOpen]);
@@ -165,7 +186,6 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                     multiple
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             );
           }}
@@ -193,7 +213,6 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                   </div>
                 </>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />

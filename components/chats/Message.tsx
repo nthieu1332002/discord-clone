@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useModal } from "@/hooks/useModal";
+import ImageGrid from "./ImageGrid";
 
 type Props = {
   currentProfile: Member;
@@ -108,7 +109,7 @@ const Message = ({
         {isEditing ? (
           <Form {...form}>
             <form
-              className="flex items-center w-full gap-x-2 pt-2"
+              className="flex items-center w-full gap-x-2 pt-2 pr-12"
               onSubmit={form.handleSubmit(onSubmit)}
             >
               <FormField
@@ -140,6 +141,7 @@ const Message = ({
         ) : (
           <p className="text-sm font-light">{message.content}</p>
         )}
+        {message.fileUrl ? <ImageGrid url={message.fileUrl}/>: null}
       </div>
       <div className="absolute invisible group-hover:visible right-2 -top-2">
         <DropdownMenu>
