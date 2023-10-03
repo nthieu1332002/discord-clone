@@ -5,21 +5,28 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChannelType, Member, MemberRole } from "@prisma/client";
+import {
+  Channel,
+  ChannelType,
+  Member,
+  MemberRole,
+  Profile,
+} from "@prisma/client";
 import {
   ChevronDown,
   ChevronRight,
   Hash,
   Volume2Icon,
-  UserPlus,
   Plus,
   Settings,
 } from "lucide-react";
 import CustomTooltip from "../custom-tooltip";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ModalType, useModal } from "@/hooks/useModal";
 import { CategoryWithChannels } from "@/types";
+import VoiceList from "./VoiceList";
+import useVoiceMemberStore from "@/hooks/useVoiceMemberStore";
 
 export const iconMap = {
   [ChannelType.TEXT]: Hash,
@@ -28,6 +35,7 @@ export const iconMap = {
 type CategoryProps = {
   currentProfile: Member;
   category: CategoryWithChannels;
+  // currentVoice: Profile
 };
 
 const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
@@ -35,10 +43,11 @@ const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const { onOpen } = useModal();
-
-  const onClick = useCallback(
-    (id: string) => {
-      router.push(`/servers/${params?.serverId}/${id}`);
+  const { members } = useVoiceMemberStore();
+  console.log("members in", members);
+  const onChangeChannel = useCallback(
+    (channel: Channel) => {
+      router.push(`/servers/${params?.serverId}/${channel.id}`);
     },
     [params?.serverId, router]
   );
@@ -86,45 +95,54 @@ const CategoryItem = ({ category, currentProfile }: CategoryProps) => {
             item.name.length > 21
               ? item.name.substring(0, 21) + "..."
               : item.name;
-
+          const memberList = members.filter(
+            (member) => member.channelId === item.id
+          );
           return (
-            <div
-              key={item.id}
-              onClick={() => onClick(item.id)}
-              className={cn(
-                "group cursor-pointer flex items-center gap-1 rounded-md px-3 py-[0.4rem] text-sm text-zinc-400",
-                params?.channelId === item.id
-                  ? "bg-zinc-700/20 dark:bg-zinc-700"
-                  : "hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
-              )}
-            >
-              <Icon className="flex-shrink-0 w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-              <p
+            <React.Fragment key={item.id}>
+              <div
+                onClick={() => onChangeChannel(item)}
                 className={cn(
-                  "line-clamp-1 font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition",
-                  params?.channelId === item.id &&
-                    "text-primary dark:text-zinc-200 dark:group-hover:text-white"
+                  "group cursor-pointer flex items-center gap-1 rounded-md px-3 py-[0.4rem] text-sm text-zinc-400",
+                  params?.channelId === item.id
+                    ? "bg-zinc-700/20 dark:bg-zinc-700"
+                    : "hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
                 )}
               >
-                {channelName}
-              </p>
-              {currentProfile.role === MemberRole.ADMIN ||
-              currentProfile.role === MemberRole.MODERATOR ? (
-                <CustomTooltip side="top" align="center" label="Edit Channel">
-                  <Settings
-                    fill="true"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpen("editChannel", { channel: item, other: category });
-                    }}
-                    className={cn(
-                      "h-4 w-4 ml-auto invisible group-hover:visible dark:group-hover:text-white",
-                      params?.channelId === item.id && "visible"
-                    )}
-                  />
-                </CustomTooltip>
+                <Icon className="flex-shrink-0 w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                <p
+                  className={cn(
+                    "line-clamp-1 font-semibold text-sm text-zinc-500 group-hover:text-zinc-600 dark:text-zinc-400 dark:group-hover:text-zinc-300 transition",
+                    params?.channelId === item.id &&
+                      "text-primary dark:text-zinc-200 dark:group-hover:text-white"
+                  )}
+                >
+                  {channelName}
+                </p>
+                {currentProfile.role === MemberRole.ADMIN ||
+                currentProfile.role === MemberRole.MODERATOR ? (
+                  <CustomTooltip side="top" align="center" label="Edit Channel">
+                    <Settings
+                      fill="true"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpen("editChannel", {
+                          channel: item,
+                          other: category,
+                        });
+                      }}
+                      className={cn(
+                        "h-4 w-4 ml-auto invisible group-hover:visible dark:group-hover:text-white",
+                        params?.channelId === item.id && "visible"
+                      )}
+                    />
+                  </CustomTooltip>
+                ) : null}
+              </div>
+              {item.type === ChannelType.VOICE && memberList.length > 0 ? (
+                <VoiceList members={memberList} />
               ) : null}
-            </div>
+            </React.Fragment>
           );
         })}
       </CollapsibleContent>

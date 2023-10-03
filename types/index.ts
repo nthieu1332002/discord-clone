@@ -20,3 +20,5 @@ export type MessageWithMemberWithProfile = Message & {
     profile: Profile;
   }
 }
+
+export type ProfileWithChannelId = Profile & { channelId: string }

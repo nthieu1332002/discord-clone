@@ -1,9 +1,11 @@
+import { MediaRoom } from "@/components/MediaRoom";
 import ChatContent from "@/components/chats/ChatContent";
 import ChatHeader from "@/components/chats/ChatHeader";
 import { ChatInput } from "@/components/chats/ChatInput";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { redirectToSignIn } from "@clerk/nextjs";
+import { ChannelType } from "@prisma/client";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -41,27 +43,33 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
       <ChatHeader name={channel.name} type={channel.type} />
-      <ChatContent
-        currentProfile={member}
-        apiUrl="/api/messages"
-        channel={channel}
-        paramKey="channelId"
-        paramValue={channel.id}
-        socketUrl="/api/socket/messages"
-        socketQuery={{
-          channelId: channel.id,
-          serverId: channel.category.serverId,
-        }}
-      />
-      <ChatInput
-        name={channel.name}
-        type="channel"
-        apiUrl="/api/socket/messages"
-        query={{
-          channelId: channel.id,
-          serverId: channel.category.serverId,
-        }}
-      />
+      {channel.type === ChannelType.TEXT ? (
+        <>
+          <ChatContent
+            currentProfile={member}
+            apiUrl="/api/messages"
+            channel={channel}
+            paramKey="channelId"
+            paramValue={channel.id}
+            socketUrl="/api/socket/messages"
+            socketQuery={{
+              channelId: channel.id,
+              serverId: channel.category.serverId,
+            }}
+          />
+          <ChatInput
+            name={channel.name}
+            type="channel"
+            apiUrl="/api/socket/messages"
+            query={{
+              channelId: channel.id,
+              serverId: channel.category.serverId,
+            }}
+          />
+        </>
+      ) : (
+        <MediaRoom currentProfile={profile} channelId={channel.id} video={false} audio={true} />
+      )}
     </div>
   );
 };

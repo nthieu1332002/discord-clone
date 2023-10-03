@@ -92,7 +92,7 @@ const Message = ({
     return () => window.removeEventListener("keyDown", handleKeyDown);
   }, []);
   return (
-    <div className="relative group px-4 py-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-800/50 flex gap-3">
+    <div className="relative group px-4 py-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-800/30 flex gap-3">
       <Avatar className="cursor-pointer">
         <AvatarImage src={member.profile.imageUrl} />
         <AvatarFallback>{member.profile.name}</AvatarFallback>

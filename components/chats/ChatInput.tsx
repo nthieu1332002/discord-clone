@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
 import {
   Form,
   FormControl,
@@ -63,7 +62,6 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
     },
   });
   const isLoading = form.formState.isSubmitting;
-  console.log("form", form.getValues());
 
   const convertBase64 = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -134,7 +132,7 @@ export const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
     },
     [form, previewImage]
   );
-  const { onOpen, isOpen } = useModal();
+  const { onOpen } = useModal();
 
   useEffect(() => {
     if (limit) {

@@ -17,9 +17,9 @@ const ServerSidebar = async ({ id }: { id: string }) => {
         orderBy: { createdAt: "asc" },
         include: {
           channels: {
-            orderBy: { createdAt: "asc"}
-          }
-        }
+            orderBy: { createdAt: "asc" },
+          },
+        },
       },
     },
   });
@@ -36,7 +36,13 @@ const ServerSidebar = async ({ id }: { id: string }) => {
         <ServerHeader server={server} />
         <ScrollArea className="p-3">
           {server.categories.map((item) => {
-            return <CategoryItem key={item.id} currentProfile={member} category={item} />;
+            return (
+              <CategoryItem
+                key={item.id}
+                currentProfile={member}
+                category={item}
+              />
+            );
           })}
         </ScrollArea>
       </div>

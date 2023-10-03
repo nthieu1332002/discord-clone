@@ -13,7 +13,7 @@ type Props = {
 
 const Member = ({ members }: Props) => {
   const { members: active } = useMember();
-
+  console.log("active", active);
   const online = members.filter((obj) => active.includes(obj.profileId));
   const offline = members.filter((obj) => !active.includes(obj.profileId));
 
@@ -24,7 +24,9 @@ const Member = ({ members }: Props) => {
       </div>
       <ScrollArea>
         <div className="p-2">
-          <p className="font-semibold text-xs text-black dark:text-gray-400 uppercase">online — {online.length}</p>
+          <p className="font-semibold text-xs text-black dark:text-gray-400 uppercase">
+            online — {online.length}
+          </p>
           {online.map((item) => {
             return (
               <MemberItem
@@ -37,7 +39,9 @@ const Member = ({ members }: Props) => {
           })}
         </div>
         <div className="p-2">
-        <p className="font-semibold text-xs text-black dark:text-gray-400 uppercase">offline — {offline.length}</p>
+          <p className="font-semibold text-xs text-black dark:text-gray-400 uppercase">
+            offline — {offline.length}
+          </p>
 
           {offline.map((item) => {
             return (
