@@ -61,7 +61,7 @@ const ChatContent = ({
           Welcome to # {channel.name}!
         </p>
         <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-          This is the start of the #${channel.name} channel.
+          This is the start of the #{channel.name} channel.
         </p>
       </div>
       <div className="flex flex-col-reverse gap-2">

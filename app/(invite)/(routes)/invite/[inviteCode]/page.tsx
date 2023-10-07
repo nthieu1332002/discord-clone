@@ -43,8 +43,10 @@ const InvitePage = async ({ params }: Props) => {
     },
   });
   if (server) {
-    pusherServer.trigger(server.id, "pusher:member_added", profile);
-    return redirect(`/servers/${server.id}`);}
+    pusherServer
+      .trigger("presence-member", "pusher:member_added", profile.id)
+    return redirect(`/servers/${server.id}`);
+  }
   return null;
 };
 

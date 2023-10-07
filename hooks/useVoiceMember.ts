@@ -12,28 +12,28 @@ const useVoiceMember = () => {
     let channel = activeChannel;
 
     if (!channel) {
-      channel = pusherClient.subscribe('voice-member');
+      channel = pusherClient.subscribe('presence-voice-member');
       setActiveChannel(channel);
     }
 
-    channel.bind("pusher:subscription_succeeded", (members: Members) => {
-      const initialMembers: ProfileWithChannelId[] = [];
+    // channel.bind("pusher:subscription_succeeded", (members: Members) => {
+    //   const initialMembers: ProfileWithChannelId[] = [];
 
-      members.each((member:  ProfileWithChannelId) => initialMembers.push(member));
-      set(initialMembers);
-    });
+    //   members.each((member: ProfileWithChannelId) => initialMembers.push(member));
+    //   set(initialMembers);
+    // });
 
-    channel.bind("pusher:member_added", (member:   ProfileWithChannelId) => {
-      add(member)
-    });
+    // channel.bind("pusher:member_added", (member: ProfileWithChannelId) => {
+    //   add(member)
+    // });
 
-    channel.bind("pusher:member_removed", (member:   ProfileWithChannelId) => {
-      remove(member);
-    });
+    // channel.bind("pusher:member_removed", (member: ProfileWithChannelId) => {
+    //   remove(member);
+    // });
 
     return () => {
       if (activeChannel) {
-        pusherClient.unsubscribe('voice-member');
+        pusherClient.unsubscribe('presence-voice-member');
         setActiveChannel(null);
       }
     }

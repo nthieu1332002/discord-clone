@@ -1,18 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Loader2 } from "lucide-react";
-import { Profile } from "@prisma/client";
+import { ChannelType, Profile } from "@prisma/client";
 import { PlayJoinSound, PlayLeaveSound } from "./PlayMessageSound";
-import useVoiceMemberStore from "@/hooks/useVoiceMemberStore";
+import { pusherClient } from "@/lib/pusher";
+import { Channel, Members } from "pusher-js";
+import useVoiceMemberStore, { VoiceMember } from "@/hooks/useVoiceMemberStore";
+import axios from "axios";
+import { cn } from "@/lib/utils";
+import useChannelStore from "@/hooks/useChannelStore";
 
 interface MediaRoomProps {
   channelId: string;
   video: boolean;
   audio: boolean;
   currentProfile: Profile;
+  type: ChannelType;
 }
 
 export const MediaRoom = ({
@@ -20,24 +26,37 @@ export const MediaRoom = ({
   channelId,
   video,
   audio,
+  type,
 }: MediaRoomProps) => {
-  const { add, remove } = useVoiceMemberStore();
-  const [token, setToken] = useState("");
-  const voiceMember = useMemo(() => {
-    return { ...currentProfile, channelId: channelId };
-  }, [currentProfile, channelId]);
+  const { channelType, setType } = useChannelStore();
+  const [token, setToken] = useState();
+  const { set } = useVoiceMemberStore();
 
   useEffect(() => {
-    PlayJoinSound();
-    add(voiceMember);
-    return () => {
-      PlayLeaveSound();
-      remove(voiceMember);
+    if (!channelType) {
+      setType(type);
+    }
+  }, [type, setType, channelType]);
+
+  useEffect(() => {
+    if (channelType === ChannelType.TEXT && type === ChannelType.TEXT) return;
+    const fetchOnline = async () => {
+      try {
+        const resp = await axios.post("/api/onlineusers", {
+          channelId: channelId,
+          id: currentProfile.id,
+        });
+        set(resp.data);
+      } catch (error) {
+        console.log(error);
+      }
     };
-  }, [add, remove, voiceMember]);
+
+    fetchOnline();
+  }, [channelId, channelType, currentProfile.id, set, type]);
 
   useEffect(() => {
-    if (!currentProfile?.name) return;
+    if (!currentProfile?.name && type === ChannelType.TEXT) return;
 
     (async () => {
       try {
@@ -50,31 +69,32 @@ export const MediaRoom = ({
         console.log(e);
       }
     })();
-  }, [channelId, currentProfile]);
+  }, [channelId, currentProfile.name, type]);
 
-  if (token === "") {
-    return (
-      <div className="flex flex-col flex-1 justify-center items-center">
-        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading...</p>
-      </div>
-    );
-  }
-
+  const renderLoader = () => (
+    <div className="flex flex-col flex-1 justify-center items-center">
+      <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading...</p>
+    </div>
+  );
   return (
-    <LiveKitRoom
-      data-lk-theme="default"
-      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-      token={token}
-      connect={true}
-      video={video}
-      audio={audio}
-      onDisconnected={() => {
-        PlayLeaveSound();
-        remove(voiceMember);
-      }}
-    >
-      <VideoConference />
-    </LiveKitRoom>
+    <>
+      {token ? (
+        <LiveKitRoom
+          data-lk-theme="default"
+          serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+          token={token}
+          connect={true}
+          video={video}
+          audio={audio}
+          onDisconnected={() => {
+            // PlayLeaveSound();
+          }}
+          className={cn(type === ChannelType.TEXT ? "hidden" : "")}
+        >
+          <VideoConference />
+        </LiveKitRoom>
+      ) : null}
+    </>
   );
 };

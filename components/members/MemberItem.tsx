@@ -13,7 +13,12 @@ type Props = {
 
 const MemberItem = ({ profile, role, status }: Props) => {
   return (
-    <div className="group px-2 py-1 flex items-center gap-2 cursor-pointer rounded-md hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition">
+    <div
+      className={cn(
+        "group px-2 py-1 flex items-center gap-2 cursor-pointer rounded-md hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition",
+        status === "offline" ? "brightness-50" : ""
+      )}
+    >
       <div className="relative">
         <Avatar className="cursor-pointer w-9 h-9">
           <AvatarImage src={profile.imageUrl} />
@@ -21,7 +26,7 @@ const MemberItem = ({ profile, role, status }: Props) => {
         </Avatar>
         <span
           className={cn(
-            "absolute block rounded-full  ring-2 dark:ring-[#2B2D31] ring-bg-[#F2F3F5] bottom-0 right-0 h-[11px] w-[11px]",
+            "absolute block rounded-full bottom-0 right-0 h-[11px] w-[11px]",
             status === "online" ? "bg-green-500" : "bg-red-500"
           )}
         />

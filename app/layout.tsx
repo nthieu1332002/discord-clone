@@ -9,7 +9,6 @@ import ModalProvider from "@/components/providers/modal-provider";
 import SocketProvider from "@/components/providers/socket-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import ActiveProvider from "@/components/providers/active-provider";
-import VoiceMemberProvider from "@/components/providers/voice-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -47,7 +46,6 @@ export default async function RootLayout({
             <SocketProvider>
               <ModalProvider />
               <ActiveProvider/>
-              <VoiceMemberProvider/>
               <QueryProvider>{children}</QueryProvider>
             </SocketProvider>
           </ThemeProvider>

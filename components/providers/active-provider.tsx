@@ -1,8 +1,8 @@
 "use client"
-import useActiveChannel from "@/hooks/useActiveMember";
+import useActiveMember from "@/hooks/useActiveMember";
 
 const ActiveProvider = () => {
-  useActiveChannel();
+  useActiveMember();
   return null;
 };
 
