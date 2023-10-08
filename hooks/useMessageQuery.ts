@@ -19,7 +19,6 @@ export const useMessageQuery = ({
   const { isConnected } = useSocket();
 
   const fetchMessages = async ({ pageParam = undefined }) => {
-    // console.log("pageParam in useMessageQuery", pageParam);
     const url = qs.stringifyUrl({
       url: apiUrl,
       query: {
@@ -27,9 +26,7 @@ export const useMessageQuery = ({
         [paramKey]: paramValue, //channel id
       }
     }, { skipNull: true });
-    // console.log("url", url);
     const res = await fetch(url).then(res => res.clone().json())
-    // console.log("res, res", res);
     return res;
   };
 

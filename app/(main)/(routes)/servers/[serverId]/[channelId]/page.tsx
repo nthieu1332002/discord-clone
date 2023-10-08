@@ -45,7 +45,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
     <div className="bg-white dark:bg-[#313338] flex flex-col h-screen">
       <ChatHeader name={channel.name} type={channel.type} />
       {channel.type === ChannelType.TEXT ? (
-        <div className="flex flex-col h-[calc(100vh-48px)]">
+        <>
           <ChatContent
             currentProfile={member}
             apiUrl="/api/messages"
@@ -67,15 +67,10 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
               serverId: channel.category.serverId,
             }}
           />
-        </div>
-      ) : null}
-      <MediaRoom
-        currentProfile={profile}
-        channelId={channel.id}
-        video={false}
-        audio={true}
-        type={channel.type}
-      />
+          </>
+      ) : 
+        <MediaRoom currentProfile={profile} channelId={channel.id} video={false} audio={true} />
+      }
     </div>
   );
 };

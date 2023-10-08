@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -28,7 +28,10 @@ import {
 } from "lucide-react";
 import { CategoryWithChannels } from "@/types";
 import VoiceList from "./VoiceList";
-import useVoiceMemberStore from "@/hooks/useVoiceMemberStore";
+import useVoiceMemberStore, { VoiceMember } from "@/hooks/useVoiceMemberStore";
+import { pusherClient } from "@/lib/pusher";
+import { Channel as ChannelPusher } from "pusher-js";
+import { PlayUserJoinSound, PlayUserLeaveSound } from "../PlayMessageSound";
 
 type Props = {
   categories: CategoryWithChannels[];
@@ -41,13 +44,47 @@ const IconMap = {
   [ChannelType.TEXT]: Hash,
   [ChannelType.VOICE]: Volume2Icon,
 };
+
+type pusherOnline = {
+  onlineUsersArray: VoiceMember[];
+  channelId: string;
+  id: string;
+};
+
 const CategoryList = ({ categories, currentProfile, members }: Props) => {
   const { serverId, channelId } = useParams() ?? {};
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const { onOpen } = useModal();
-  const { members: voiceMembers } = useVoiceMemberStore();
-  console.log("voiceMember", voiceMembers);
+  const { members: voiceMembers, set } = useVoiceMemberStore();
+
+  const [activeChannel, setActiveChannel] = useState<ChannelPusher | null>(
+    null
+  );
+
+  useEffect(() => {
+    let channel = activeChannel;
+
+    if (!channel) {
+      channel = pusherClient.subscribe("my-channel");
+      setActiveChannel(channel);
+    }
+
+    channel.bind("online-users-added", (data: pusherOnline) => {
+      set(data.onlineUsersArray);
+    });
+    channel.bind("online-users-removed", (data: pusherOnline) => {
+      set(data.onlineUsersArray);
+    });
+
+    return () => {
+      if (activeChannel) {
+        pusherClient.unsubscribe("my-channel");
+        setActiveChannel(null);
+      }
+    };
+  }, [activeChannel, set]);
+
   const onChangeChannel = useCallback(
     (channel: Channel) => {
       router.push(`/servers/${serverId}/${channel.id}`);

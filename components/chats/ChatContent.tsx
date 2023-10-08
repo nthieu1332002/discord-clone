@@ -48,6 +48,7 @@ const ChatContent = ({
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
     count: data?.pages?.[0]?.items?.length ?? 0,
   });
+
   return (
     <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto ">
       <div className="flex-1" />
