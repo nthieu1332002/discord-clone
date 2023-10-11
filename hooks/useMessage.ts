@@ -50,7 +50,6 @@ export const useMessage = ({
     });
 
     socket.on(addKey, (message: MessageWithMemberWithProfile) => {
-      console.log("+ new message", message);
       queryClient.setQueryData([queryKey], (oldData: any) => {
         if (!oldData || !oldData.pages || oldData.pages.length === 0) {
           return {

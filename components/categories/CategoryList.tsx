@@ -59,7 +59,6 @@ const CategoryList = ({ categories, currentProfile, members }: Props) => {
     const fetchOnline = async () => {
       try {
         const resp = await axios.get("/api/onlineusers");
-        console.log(resp.data);
         set(resp.data);
       } catch (error) {
         console.log(error);
@@ -79,12 +78,9 @@ const CategoryList = ({ categories, currentProfile, members }: Props) => {
     }
 
     channel.bind("online-users-added", (data: VoiceMember[]) => {
-      console.log("data add", data);
       set(data);
     });
     channel.bind("online-users-removed", (data: VoiceMember[]) => {
-      console.log("data remove", data);
-
       set(data);
     });
 

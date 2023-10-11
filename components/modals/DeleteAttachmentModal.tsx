@@ -16,7 +16,7 @@ const DeleteAttachmentModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const [isLoading, setIsLoading] = useState(false);
   const { apiUrl, query, other} = data;
-  console.log("data", data);
+
   const router = useRouter();
   const isModalOpen = isOpen && type === "deleteAttachment";
   const handleClose = () => {

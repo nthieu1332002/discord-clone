@@ -27,7 +27,6 @@ const ImageGrid = ({ url, canDelete, messageId, socketQuery }: Props) => {
   const removeImage = (e: any, item: string) => {
     e.preventDefault();
     const remove = images.filter((i) => i !== item);
-    console.log(remove);
     const fileUrl = remove.join(',')
     onOpen("deleteAttachment", {
       apiUrl: `${socketUrl}/${messageId}/attachment`,
