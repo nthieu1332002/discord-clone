@@ -49,6 +49,7 @@ export const MediaRoom = ({
           channelId: channelId,
           id: currentProfile.id,
         });
+        console.log(resp.data);
         set(resp.data);
       } catch (error) {
         console.log(error);

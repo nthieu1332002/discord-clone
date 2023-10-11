@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import qs from "query-string";
 import * as z from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Member, MemberRole, Message, Profile } from "@prisma/client";
+import { Channel, Member, MemberRole, Message, Profile } from "@prisma/client";
 import { format } from "date-fns";
 import {
   DropdownMenu,
@@ -29,9 +29,11 @@ type Props = {
   member: Member & {
     profile: Profile;
   };
+
   message: Message;
   socketUrl: string;
   socketQuery: Record<string, string>;
+  isUpdated: boolean;
 };
 const DATE_FORMAT = "MM/dd/yyyy hh:mm aa";
 
@@ -45,7 +47,12 @@ const Message = ({
   member,
   socketUrl,
   socketQuery,
+  isUpdated,
 }: Props) => {
+  const canDelete =
+    currentProfile.id === member.id ||
+    currentProfile.role === MemberRole.ADMIN ||
+    currentProfile.role === MemberRole.MODERATOR;
   const { onOpen } = useModal();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -139,66 +146,78 @@ const Message = ({
             </span>
           </Form>
         ) : (
-          <p className="text-sm font-light">{message.content}</p>
+          <p className="text-sm font-light">
+            {message.content}{" "}
+            {isUpdated && message.deleted === false ? (
+              <span className="text-xs text-gray-400">(edited)</span>
+            ) : null}
+          </p>
         )}
-        {message.fileUrl ? <ImageGrid url={message.fileUrl}/>: null}
+        {message.fileUrl ? (
+          <ImageGrid
+            messageId={message.id}
+            socketQuery={socketQuery}
+            canDelete={canDelete}
+            url={message.fileUrl}
+          />
+        ) : null}
       </div>
-      <div className="absolute invisible group-hover:visible right-2 -top-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="focus:outline-none" asChild>
-            <button className="rounded-md p-2 flex items-center dark:bg-zinc-700 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/60">
-              <MoreHorizontal className="ml-auto h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side="left"
-            className="px-1 py-2 w-56 text-xs font-normal text-black dark:text-neutral-400 space-y-[2px]"
-          >
-            <DropdownMenuGroup>
-              {currentProfile.id === member.id && (
+      {!message.deleted ? (
+        <div className="absolute invisible group-hover:visible right-2 -top-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="focus:outline-none" asChild>
+              <button className="rounded-md p-2 flex items-center dark:bg-zinc-700 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/60">
+                <MoreHorizontal className="ml-auto h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="left"
+              className="px-1 py-2 w-56 text-xs font-normal text-black dark:text-neutral-400 space-y-[2px]"
+            >
+              <DropdownMenuGroup>
+                {currentProfile.id === member.id && (
+                  <DropdownMenuItem
+                    onClick={() => setIsEditing(true)}
+                    className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-500"
+                  >
+                    Edit Message
+                    <DropdownMenuShortcut>
+                      <Pencil className="h-4 w-4 ml-auto" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
-                  onClick={() => setIsEditing(true)}
+                  onClick={onCopy}
                   className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-500"
                 >
-                  Edit Message
+                  Copy text
                   <DropdownMenuShortcut>
-                    <Pencil className="h-4 w-4 ml-auto" />
+                    <Copy className="h-4 w-4 ml-auto" />
                   </DropdownMenuShortcut>
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                onClick={onCopy}
-                className="text-sm cursor-pointer hover:text-white hover:bg-indigo-500 dark:hover:bg-indigo-500"
-              >
-                Copy text
-                <DropdownMenuShortcut>
-                  <Copy className="h-4 w-4 ml-auto" />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {currentProfile.id === member.id ||
-              currentProfile.role === MemberRole.ADMIN ||
-              currentProfile.role === MemberRole.MODERATOR ? (
-                <DropdownMenuItem
-                  onClick={() =>
-                    onOpen("deleteMessage", {
-                      apiUrl: `${socketUrl}/${message.id}`,
-                      query: socketQuery,
-                      other: message,
-                    })
-                  }
-                  className="text-red-500 text-sm cursor-pointer hover:text-white hover:bg-red-500 dark:hover:bg-red-500"
-                >
-                  Delete message
-                  <DropdownMenuShortcut>
-                    <Trash className="h-4 w-4 ml-auto" />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              ) : null}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+                <DropdownMenuSeparator />
+                {canDelete ? (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      onOpen("deleteMessage", {
+                        apiUrl: `${socketUrl}/${message.id}`,
+                        query: socketQuery,
+                        other: message,
+                      })
+                    }
+                    className="text-red-500 text-sm cursor-pointer hover:text-white hover:bg-red-500 dark:hover:bg-red-500"
+                  >
+                    Delete message
+                    <DropdownMenuShortcut>
+                      <Trash className="h-4 w-4 ml-auto" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                ) : null}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ) : null}
     </div>
   );
 };

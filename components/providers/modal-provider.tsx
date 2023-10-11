@@ -4,11 +4,12 @@ import { CreateServerModal } from "@/components/modals/CreateServerModal";
 import { CreateChannelModal } from "@/components/modals/CreateChannelModal";
 import { CreateCategoryModal } from "@/components/modals/CreateCategoryModal";
 import { InviteModal } from "@/components/modals/InviteModal";
-import { DeleteMessageModal } from "@/components/modals/DeleteMessageModel";
+import { DeleteMessageModal } from "@/components/modals/DeleteMessageModal";
 import { useModal } from "@/hooks/useModal";
 import { EditChannelModal } from "@/components/modals/EditChannelModal";
 import DeleteChannelModal from "../modals/DeleteChannelModal";
 import FileWarning from "../modals/FileWarningModal";
+import DeleteAttachmentModal from "../modals/DeleteAttachmentModal";
 
 const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -30,6 +31,7 @@ const ModalProvider = () => {
       {isOpen && type === "deleteMessage" && <DeleteMessageModal />}
       {isOpen && type === "deleteChannel" && <DeleteChannelModal />}
       {isOpen && type === "warning" && <FileWarning />}
+      {isOpen && type === "deleteAttachment" && <DeleteAttachmentModal />}      
 
     </>
   );

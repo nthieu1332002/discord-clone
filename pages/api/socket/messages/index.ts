@@ -4,8 +4,6 @@ import { db } from "@/lib/db";
 import { SocketIOResponse } from "@/types";
 import { NextApiRequest } from "next";
 import { v2 as cloudinary } from 'cloudinary';
-import formidable from 'formidable';
-
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     secure: true,

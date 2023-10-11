@@ -74,7 +74,7 @@ const ChatContent = ({
                 currentProfile={currentProfile}
                 message={message}
                 member={message.member}
-                // isUpdated={message.updatedAt !== message.createdAt}
+                isUpdated={message.updatedAt !== message.createdAt}
                 socketUrl={socketUrl}
                 socketQuery={socketQuery}
               />

@@ -12,12 +12,13 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-const DeleteChannelModal = () => {
+const DeleteAttachmentModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const [isLoading, setIsLoading] = useState(false);
-  const { channel, other } = data;
+  const { apiUrl, query, other} = data;
+  console.log("data", data);
   const router = useRouter();
-  const isModalOpen = isOpen && type === "deleteChannel";
+  const isModalOpen = isOpen && type === "deleteAttachment";
   const handleClose = () => {
     onClose();
   };
@@ -25,13 +26,11 @@ const DeleteChannelModal = () => {
     setIsLoading(true);
     try {
       const url = qs.stringifyUrl({
-        url: `/api/channels/${channel?.id}`,
-        query: {
-          categoryId: other.id,
-          serverId: other.serverId,
-        },
+        url: apiUrl || "",
+        query,
       });
-      await axios.delete(url);
+
+      await axios.patch(url, other);
       setIsLoading(false);
       router.refresh();
       onClose();
@@ -45,11 +44,11 @@ const DeleteChannelModal = () => {
       <DialogContent className="bg-white dark:bg-[#2B2D31] text-zinc-500 dark:text-gray-200 p-0 overflow-hidden">
         <DialogHeader className="pt-4 px-6">
           <DialogTitle className="flex text-base font-semibold">
-            Delete channel {channel?.name}
+            Are you sure?
           </DialogTitle>
         </DialogHeader>
         <div className="px-6">
-          This will permanently delete the <span className="underline">{channel?.name}</span> and remove all the relevant data.
+          This will remove this attachment from this message permanently
         </div>
         <DialogFooter className="bg-white dark:bg-zinc-800 flex items-center text-sm gap-2 px-6 py-4">
           <p className="cursor-pointer hover:underline" onClick={handleClose}>
@@ -60,7 +59,7 @@ const DeleteChannelModal = () => {
             variant="destructive"
             disabled={isLoading}
           >
-            Delete channel
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -68,4 +67,4 @@ const DeleteChannelModal = () => {
   );
 };
 
-export default DeleteChannelModal;
+export default DeleteAttachmentModal;

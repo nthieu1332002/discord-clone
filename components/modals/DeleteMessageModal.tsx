@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/useModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ImageGrid from "../chats/ImageGrid";
 
 const DATE_FORMAT = "MM/dd/yyyy hh:mm aa";
 export const DeleteMessageModal = () => {
@@ -69,6 +70,7 @@ export const DeleteMessageModal = () => {
               </span>
             </div>
             <p className="text-sm font-light">{message?.content}</p>
+            {message.fileUrl ? <ImageGrid canDelete={false} url={message.fileUrl} /> : null}
           </div>
         </div>
         <DialogFooter className="bg-white dark:bg-zinc-800 flex items-center text-sm gap-2 px-6 py-4">

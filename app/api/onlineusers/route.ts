@@ -2,6 +2,17 @@ import { pusherServer } from "@/lib/pusher";
 import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 
+export const GET = async () => {
+    try {
+        const onlineUsers = await redis.hgetall("onlineusers");
+        const onlineUsersArray = Object.entries(onlineUsers).map(([id, channelId]) => ({ id, channelId }));
+        return new NextResponse(JSON.stringify(onlineUsersArray), { status: 200 });
+    } catch (error) {
+        console.log("online users", error);
+        return new NextResponse("Internal Error", { status: 500 })
+    }
+}
+
 export const POST = async (req: Request) => {
     try {
         const { channelId, id } = await req.json();

@@ -31,7 +31,7 @@ import VoiceList from "./VoiceList";
 import useVoiceMemberStore, { VoiceMember } from "@/hooks/useVoiceMemberStore";
 import { pusherClient } from "@/lib/pusher";
 import { Channel as ChannelPusher } from "pusher-js";
-import { PlayUserJoinSound, PlayUserLeaveSound } from "../PlayMessageSound";
+import axios from "axios";
 
 type Props = {
   categories: CategoryWithChannels[];
@@ -45,22 +45,30 @@ const IconMap = {
   [ChannelType.VOICE]: Volume2Icon,
 };
 
-type pusherOnline = {
-  onlineUsersArray: VoiceMember[];
-  channelId: string;
-  id: string;
-};
-
 const CategoryList = ({ categories, currentProfile, members }: Props) => {
   const { serverId, channelId } = useParams() ?? {};
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const { onOpen } = useModal();
   const { members: voiceMembers, set } = useVoiceMemberStore();
-
   const [activeChannel, setActiveChannel] = useState<ChannelPusher | null>(
     null
   );
+  
+  useEffect(() => {
+    const fetchOnline = async () => {
+      try {
+        const resp = await axios.get("/api/onlineusers");
+        console.log(resp.data);
+        set(resp.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    
+    fetchOnline();
+  }, [set])
+
 
   useEffect(() => {
     let channel = activeChannel;
@@ -70,11 +78,14 @@ const CategoryList = ({ categories, currentProfile, members }: Props) => {
       setActiveChannel(channel);
     }
 
-    channel.bind("online-users-added", (data: pusherOnline) => {
-      set(data.onlineUsersArray);
+    channel.bind("online-users-added", (data: VoiceMember[]) => {
+      console.log("data add", data);
+      set(data);
     });
-    channel.bind("online-users-removed", (data: pusherOnline) => {
-      set(data.onlineUsersArray);
+    channel.bind("online-users-removed", (data: VoiceMember[]) => {
+      console.log("data remove", data);
+
+      set(data);
     });
 
     return () => {
