@@ -37,22 +37,21 @@ const formSchema = z
     content: z.string().max(1000),
     fileUrl: z
       .any()
-      
-      .refine(
-        (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-        `Max file size is 5MB.`
-      )
-      .refine(
-        (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-        ".jpg, .jpeg, .png and .webp files are accepted."
-      ),
+      // .refine(
+      //   (files) => files?.[0]?.size <= MAX_FILE_SIZE,
+      //   `Max file size is 5MB.`
+      // )
+      // .refine(
+      //   (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      //   ".jpg, .jpeg, .png and .webp files are accepted."
+      // ),
   })
   .refine(
     (data) => {
       // At least one of 'content' or 'fileUrl' must be provided.
       return (
         data.content !== "" ||
-        (data.fileUrl !== undefined && data.fileUrl.length > 0)
+        (data.fileUrl !== undefined && data.fileUrl.length > 0 && data.fileUrl?.[0]?.size <= MAX_FILE_SIZE && ACCEPTED_IMAGE_TYPES.includes(data.fileUrl?.[0]?.type))
       );
     },
     {

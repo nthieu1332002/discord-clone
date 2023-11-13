@@ -17,7 +17,7 @@
     "@hookform/resolvers": "^3.3.1",
     "@livekit/components-react": "^1.2.2",
     "@livekit/components-styles": "^1.0.6",
-    "@prisma/client": "^5.2.0",
+    "@prisma/client": "^5.5.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-collapsible": "^1.0.3",
@@ -79,7 +79,7 @@
   "devDependencies": {
     "encoding": "^0.1.13",
     "file-loader": "^6.2.0",
-    "prisma": "^5.2.0",
+    "prisma": "^5.5.2",
     "url-loader": "^4.1.1"
   },
   "optionalDependencies": {
